@@ -56,15 +56,7 @@ type Object C.GLuint
 func (buffer Object) IsBuffer() bool { return C.glIsBuffer(C.GLuint(buffer)) != 0 }
 
 
-func (framebuffer Object) IsFramebuffer() bool {
-	return C.glIsFramebuffer(C.GLuint(framebuffer)) != 0
-}
-
 func (program Object) IsProgram() bool { return C.glIsProgram(C.GLuint(program)) != 0 }
-
-func (renderbuffer Object) IsRenderbuffer() bool {
-	return C.glIsRenderbuffer(C.GLuint(renderbuffer)) != 0
-}
 
 func (shader Object) IsShader() bool { return C.glIsShader(C.GLuint(shader)) != 0 }
 
@@ -212,70 +204,6 @@ func (program Program) BindAttribLocation(index GLuint, name string) {
 
 	C.glBindAttribLocation(C.GLuint(program), C.GLuint(index), cname)
 
-}
-
-// Buffer
-
-type Buffer Object
-
-func CreateBuffer() Buffer {
-	var b C.GLuint
-	C.glGenBuffers(1, &b)
-	return Buffer(b)
-}
-
-func GenBuffers(numbufs GLsizei) []Buffer {
-	rv := make([]Buffer, numbufs)
-	ptr := &rv[0]
-
-	C.glGenBuffers(C.GLsizei(numbufs), (*C.GLuint)(unsafe.Pointer(ptr)))
-	return rv
-}
-
-func (buffer Buffer) Bind(target GLenum) { C.glBindBuffer(C.GLenum(target), C.GLuint(buffer)) }
-
-func (buffer Buffer) Delete() {
-	b := C.GLuint(buffer)
-	C.glDeleteBuffers(1, &b)
-}
-
-// FrameBuffer
-
-type Framebuffer Object
-
-func CreateFramebuffer() Framebuffer {
-	var b C.GLuint
-	C.glGenFramebuffers(1, &b)
-	return Framebuffer(b)
-}
-
-func (framebuffer Framebuffer) Bind(target GLenum) {
-	C.glBindFramebuffer(C.GLenum(target), C.GLuint(framebuffer))
-}
-
-func (framebuffer Framebuffer) Delete() {
-	b := C.GLuint(framebuffer)
-	C.glDeleteFramebuffers(1, &b)
-}
-
-
-// RenderBuffer
-
-type Renderbuffer Object
-
-func CreateRenderbuffer() Renderbuffer {
-	var b C.GLuint
-	C.glGenRenderbuffers(1, &b)
-	return Renderbuffer(b)
-}
-
-func (renderbuffer Renderbuffer) Bind(target GLenum) {
-	C.glBindRenderbuffer(C.GLenum(target), C.GLuint(renderbuffer))
-}
-
-func (renderbuffer Renderbuffer) Delete() {
-	b := C.GLuint(renderbuffer)
-	C.glDeleteRenderbuffers(1, &b)
 }
 
 // Texture
@@ -451,10 +379,6 @@ func BufferSubData(target GLenum, offset GLsizeiptr, size int, data unsafe.Point
 	C.glBufferSubData(C.GLenum(target), C.GLintptr(offset), C.GLsizeiptr(size), data)
 }
 
-func CheckFramebufferStatus(target GLenum) GLenum {
-	return GLenum(C.glCheckFramebufferStatus(C.GLenum(target)))
-}
-
 func Clear(mask GLbitfield) { C.glClear(C.GLbitfield(mask)) }
 
 func ClearColor(red GLclampf, green GLclampf, blue GLclampf, alpha GLclampf) {
@@ -504,8 +428,6 @@ func Finish() { C.glFinish() }
 func Flush() { C.glFlush() }
 
 func FrontFace(mode GLenum) { C.glFrontFace(C.GLenum(mode)) }
-
-func GenerateMipmap(target GLenum) { C.glGenerateMipmap(C.GLenum(target)) }
 
 func GetError() GLenum { return GLenum(C.glGetError()) }
 
@@ -580,12 +502,6 @@ func CopyTexSubImage2D(target GLenum, level int, xoffset int, yoffset int, x int
 	C.glCopyTexSubImage2D(C.GLenum(target), C.GLint(level), C.GLint(xoffset), C.GLint(yoffset), C.GLint(x), C.GLint(y), C.GLsizei(width), C.GLsizei(height))
 }
 
-//void renderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height)
-func RenderbufferStorage(target GLenum, internalformat GLenum, width GLsizei, height GLsizei) {
-	C.glRenderbufferStorage(C.GLenum(target), C.GLenum(internalformat), C.GLsizei(width), C.GLsizei(height))
-}
-
-
 //void texImage2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, WebGLArray pixels)
 //func TexImage2D(target GLenum, level GLint, internalformat GLenum, width GLsizei, height GLsizei, border GLint, format GLenum, type_ GLenum, pixels WebGLArray) {
 //	C.glTexImage2D(C.GLenum(target), C.GLint(level), C.GLenum(internalformat), C.GLsizei(width), C.GLsizei(height), C.GLint(border), C.GLenum(format), C.GLenum(type_), C.WebGLArray(pixels));
@@ -613,14 +529,6 @@ func GetActiveAttrib(program GLuint, index GLuint) WebGLActiveInfo
 	return WebGLActiveInfo(C.glGetActiveAttrib(C.GLuint(program), C.GLuint(index)));
 }
 */
-
-func FramebufferTexture2D(target GLenum, attachment GLenum, textarget GLenum, texture Texture, level GLint) {
-	C.glFramebufferTexture2D(C.GLenum(target), C.GLenum(attachment), C.GLenum(textarget), C.GLuint(texture), C.GLint(level))
-}
-
-func FramebufferRenderbuffer(target Framebuffer, attachment GLenum, renderbuffertarget GLenum, renderbuffer Renderbuffer) {
-	C.glFramebufferRenderbuffer(C.GLenum(target), C.GLenum(attachment), C.GLenum(renderbuffertarget), C.GLuint(renderbuffer))
-}
 
 
 /* TODO
